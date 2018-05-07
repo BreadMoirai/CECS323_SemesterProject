@@ -231,6 +231,7 @@ public class CarDatabaseSQLManager
             preparedStatement.setInt(5, loanLength);
             preparedStatement.setDate(6, dateOfLastPayment);
             preparedStatement.setBigDecimal(7, monthlyPayment);
+            preparedStatement.executeUpdate();
         } catch (SQLException e)
         {
             System.out.println(e);
@@ -239,29 +240,80 @@ public class CarDatabaseSQLManager
     
     public void addManager(int employeeID, String pastAssignements)
     {
-        String updateStatement = "Insert";
+        String updateStatement = "INSERT INTO managers VALUES (?, ?)";
         
         try(PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
         {
-        
+            preparedStatement.setInt(1, employeeID);
+            preparedStatement.setString(2, pastAssignements);
+            preparedStatement.executeUpdate();
         } catch (SQLException e)
         {
             System.out.println(e);
         }
     }
-  
     
-    public static void main(String[] args)
+    public int addSalesperson(int employeeInt, double comissionRate)
     {
-        try
+        String updateStatement = "INSERT INTO salespersons VALUES (?, ?)";
+        
+        try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement,
+                Statement.RETURN_GENERATED_KEYS))
         {
-            CarDatabaseSQLManager carDatabaseSQLManager = CarDatabaseSQLManager.getInstance();
-        } catch (SQLException | ClassNotFoundException e)
+            preparedStatement.setInt(1, employeeInt);
+            preparedStatement.setDouble(2, comissionRate);
+            
+            int salespersonID = preparedStatement.executeUpdate();
+            return salespersonID;
+            
+        } catch (SQLException e)
         {
-            e.printStackTrace();
+            System.out.println(e);
+            return -1;
         }
     }
     
+    public void addTechnician(int employeeInt, String technicianCredential)
+    {
+        String updateStatement = "INSERT INTO techncians VALUES (?, ?)";
+        
+        try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement,
+                Statement.RETURN_GENERATED_KEYS))
+        {
+            preparedStatement.setInt(1, employeeInt);
+            preparedStatement.setString(2, technicianCredential);
+            
+            preparedStatement.executeUpdate();
+            
+        } catch (SQLException e)
+        {
+            System.out.println(e);
+        }
+    }
     
+    public void addUsedCar(String VIN, String license_plate, int mileage, String carCondition )
+    {
+        String updateStatement = "INSERT INTO used_cars VALUES(?, ?, ?, ?)";
+        
+        try(PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
+        {
+            preparedStatement.setString(1, VIN);
+            preparedStatement.setString(2, license_plate);
+            preparedStatement.setInt(3, mileage);
+            preparedStatement.setString(4, carCondition);
+            
+            preparedStatement.executeUpdate();
+        } catch (SQLException e)
+        {
+            System.out.println(e);
+        }
+    }
+    
+    public void createNewSale(int salepersonID, int customerID, Date dateOfSale,
+                              BigDecimal price, BigDecimal tradeInValue, String VIN)
+    {
+        addSale(salepersonID, customerID, dateOfSale, price, tradeInValue, VIN);
+        
+    }
 }
 
