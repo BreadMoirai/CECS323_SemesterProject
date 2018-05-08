@@ -23,6 +23,7 @@ import main.purchasing.PurchaseDialog;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public class Controller {
@@ -42,12 +43,15 @@ public class Controller {
     @FXML
     public void initialize() {
         tableTitle.setFont(new Font(20));
+        if (OffsetDateTime.now().getDayOfYear() == 1) {
+            database.resetVacationHours();
+        }
     }
 
     /**
      * This activates on button press.
      *
-     * @param actionEvent
+     * @param actionEvent the event for which the button is pressed
      */
     public void onAction(ActionEvent actionEvent) {
         final Object userData = ((Button) actionEvent.getSource()).getUserData();
@@ -113,7 +117,7 @@ public class Controller {
                 break;
             case "9":
                 tableTitle.setText(
-                        "Top three salespeople with the most number of repeated sales to the same customers");
+                        "Top three salespeople with the most number of repeated sales to the same customers in the past 30 days");
                 setTableResults(database.query9());
                 break;
             case "10":
@@ -214,8 +218,7 @@ public class Controller {
                 purchase.ifPresent(p -> {
                     if (p.hasLoan()) {
                         database.createNewSaleWithLoan(p.getSalespersonID(), p.getFirstName(), p.getLastName(), p.getMiddleName(), p.getAddress(), p.getZip(), p.getEmailAddress(), p.getDateOfSale(), p.getPrice(), p.getTradeInValue(), p.getVIN(), p.getSocialSecurityNumber(), p.getDateOfLoan(), p.getPrincipal(), p.getLoanLength(), p.getDateOfLastPayment(), p.getMonthlyPayment());
-                    }
-                    else {
+                    } else {
                         database.createNewSale(p.getSalespersonID(), p.getFirstName(), p.getLastName(), p.getMiddleName(), p.getAddress(), p.getZip(), p.getEmailAddress(), p.getDateOfSale(), p.getPrice(), p.getTradeInValue(), p.getVIN());
                     }
                 });
