@@ -379,5 +379,18 @@ public class CarDatabaseSQLManager
         }
     }
     
+    public ResultSet executeSQLQuery(String sqlQuery)
+    {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sqlQuery))
+        {
+            return preparedStatement.executeQuery();
+        } catch (SQLException e)
+        {
+            System.out.println(e);
+            return null;
+        }
+    }
+    
+    
 }
 
