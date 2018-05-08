@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -226,9 +227,17 @@ public class Controller {
         }
     }
 
+    /**
+     * Loads the ResultSet to table
+     * @param rs The ResultSet of a query
+     */
     private void setTableResults(ResultSet rs) {
         table.getItems().clear();
         table.getColumns().clear();
+        if (rs == null) {
+            new Alert(Alert.AlertType.ERROR, "ERROR").show();
+            return;
+        }
         try {
             final ResultSetMetaData metaData;
             metaData = rs.getMetaData();
@@ -253,6 +262,9 @@ public class Controller {
         }
     }
 
+    /**
+     * The class that represents a car's make and model.
+     */
     private static class MakeModel {
 
         private final String make, model;
@@ -271,6 +283,9 @@ public class Controller {
         }
     }
 
+    /**
+     * A class that represents a car's make model and color.
+     */
     private static class MakeModelColor extends MakeModel {
 
         private final String color;
