@@ -1,6 +1,5 @@
 package main;
 
-import com.mysql.cj.exceptions.InvalidConnectionAttributeException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -38,7 +37,7 @@ public class Controller {
         try {
             database = CarDatabaseSQLManager.getInstance();
         } catch (SQLException | ClassNotFoundException e) {
-            if (e instanceof SQLException && ((SQLException) e).getErrorCode() == 0 && e.getCause() instanceof InvalidConnectionAttributeException) {
+            if (e instanceof SQLException && ((SQLException) e).getErrorCode() == 0) {
                 System.out.println(e.getMessage());
             } else
                 e.printStackTrace();
