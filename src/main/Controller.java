@@ -225,6 +225,7 @@ public class Controller {
                     } else {
                         database.createNewSale(p.getSalespersonID(), p.getFirstName(), p.getLastName(), p.getMiddleName(), p.getAddress(), p.getZip(), p.getEmailAddress(), p.getDateOfSale(), p.getPrice(), p.getTradeInValue(), p.getVIN());
                     }
+                    database.commitChanges();
                 });
             }
         }
