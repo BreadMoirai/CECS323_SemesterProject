@@ -174,7 +174,7 @@ public class Controller {
                 final MakeModel result = makeModel.get();
                 tableTitle.setText(
                         String.format("Cars with make [%s] and model [%s]", result.getMake(), result.getModel()));
-                database.query14(result.getMake(), result.getModel());
+                setTableResults(database.query14(result.getMake(), result.getModel()));
                 break;
             }
             case "15": {
@@ -214,7 +214,7 @@ public class Controller {
                 final MakeModelColor result = makeModel.get();
                 tableTitle.setText(String.format("Cars with make [%s], model [%s], and color [%s]", result.getMake(),
                         result.getModel(), result.getColor()));
-                database.query15(result.getMake(), result.getModel(), result.getColor());
+                setTableResults(database.query15(result.getMake(), result.getModel(), result.getColor()));
                 break;
             }
             case "purchase": {
