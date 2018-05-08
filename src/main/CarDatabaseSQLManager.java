@@ -704,13 +704,14 @@ public class CarDatabaseSQLManager
     */
     public ResultSet query7()
     {
-        String sqlQuery =   "SELECT firstName, middleName, lastName, COUNT(*) as salesCount \n" +
-                            "FROM persons NATURAL JOIN employees NATURAL JOIN salespersons\n" +
-                            "WHERE employeeID IN \n" +
-                            "    (SELECT employeeID FROM sales NATURAL JOIN employees WHERE date_of_sale BETWEEN NOW() - INTERVAL 1 MONTH AND NOW())\n" +
-                            "GROUP BY employeeID\n" +
-                            "ORDER BY salesCount DESC\n" +
-                            "LIMIT 3;";
+        String sqlQuery =   "Select firstName, middleName, lastName, COUNT(date_of_sale) AS sales_count from salespersons\n" +
+                "INNER JOIN employees e ON salespersons.employeeID = e.employeeID\n" +
+                "INNER JOIN persons p ON e.personID = p.personID\n" +
+                "INNER JOIN sales s ON salespersons.employeeID = s.salespersonID\n" +
+                "WHERE date_of_sale >= DATE_SUB(NOW(), INTERVAL 1 MONTH)\n" +
+                "GROUP BY e.employeeID\n" +
+                "ORDER BY sales_count DESC\n" +
+                "LIMIT 3";
         return executeSQLQuery(sqlQuery);
     }
 
