@@ -1,4 +1,4 @@
-package sample;
+package main;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -355,5 +355,29 @@ public class CarDatabaseSQLManager
             return -1;
         }
     }
+    
+    public void resetVacationHours()
+    {
+        String update = "UPDATE employees SET unused_vacation_days = 0";
+        try(PreparedStatement preparedStatement = con.prepareStatement(update))
+        {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e)
+        {
+            System.out.println();
+        }
+    }
+    
+    public void commitChanges()
+    {
+        try
+        {
+            con.commit();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
 }
 
