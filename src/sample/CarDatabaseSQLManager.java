@@ -218,9 +218,10 @@ public class CarDatabaseSQLManager
     }
     
     public void addLoan(String VIN, int customerID, Date dateOfLoan, BigDecimal principal,
-                        int loanLength, Date dateOfLastPayment, BigDecimal monthlyPayment)
+                        int loanLength, Date dateOfLastPayment, BigDecimal monthlyPayment,
+                        String socialSecurityNumber)
     {
-        String updateStatement = "INSERT INTO loans VALUES (?, ?, ? ,? ,? ,? ,?)";
+        String updateStatement = "INSERT INTO loans VALUES (?, ?, ? ,? ,? ,? ,?, ?)";
         
         try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
         {
@@ -231,6 +232,7 @@ public class CarDatabaseSQLManager
             preparedStatement.setInt(5, loanLength);
             preparedStatement.setDate(6, dateOfLastPayment);
             preparedStatement.setBigDecimal(7, monthlyPayment);
+            preparedStatement.setString(8, socialSecurityNumber);
             preparedStatement.executeUpdate();
         } catch (SQLException e)
         {
@@ -309,11 +311,49 @@ public class CarDatabaseSQLManager
         }
     }
     
-    public void createNewSale(int salepersonID, int customerID, Date dateOfSale,
-                              BigDecimal price, BigDecimal tradeInValue, String VIN)
+    public void createNewSale(int salespersonID, String firstName, String lastName, String middleName, String address,
+                              String zip, String emailAddress,
+                              Date dateOfSale, BigDecimal price, BigDecimal tradeInValue, String VIN)
     {
-        addSale(salepersonID, customerID, dateOfSale, price, tradeInValue, VIN);
+        int customerID = getCustomerID(firstName, lastName, middleName, zip);
+        if (customerID == -1)
+        {
+            int personID = addPerson(lastName, firstName, middleName, address, zip);
+            customerID = addCustomer(personID, emailAddress);
+        }
+        addSale(salespersonID, customerID, dateOfSale, price, tradeInValue, VIN);
         
+    }
+    
+    public void createSaleWithLoan(int salespersonID, String firstName, String lastName, String middleName,
+                                   String address, String zip, String emailAddress, Date dateOfSale, BigDecimal price,
+                                   BigDecimal tradeInValue, String VIN, String socialSecurityNumber, Date dateOfLoan,
+                                   BigDecimal principal, int loanLength, Date dateOfLastPayment,
+                                   BigDecimal monthlyPayment)
+    {   int customerID = getCustomerID(firstName, lastName, middleName, zip);
+        createNewSale(salespersonID, firstName, lastName, middleName, address, zip, emailAddress, dateOfSale, price,
+                tradeInValue, VIN);
+        addLoan(VIN, customerID, dateOfLoan, principal, loanLength, dateOfLastPayment, monthlyPayment,
+                socialSecurityNumber);
+    }
+    
+    private int getCustomerID(String firstName, String lastName, String middleName, String zip)
+    {
+        String query = String.format("SELECT personID FROM persons WHERE firstName = '%s' AND lastName = '%s' " +
+                "AND middleName = '%s' AND zip = '%s'", firstName, lastName, middleName, zip);
+        try (PreparedStatement preparedStatement = con.prepareStatement(query))
+        {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next())
+            {
+                return resultSet.getInt(1);
+            }
+            return -1;
+        } catch (SQLException e)
+        {
+            System.out.println(e);
+            return -1;
+        }
     }
 }
 
