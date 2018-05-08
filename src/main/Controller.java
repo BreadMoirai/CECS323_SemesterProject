@@ -37,7 +37,7 @@ public class Controller {
         try {
             database = CarDatabaseSQLManager.getInstance();
         } catch (SQLException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
