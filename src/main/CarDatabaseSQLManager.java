@@ -7,7 +7,7 @@ public class CarDatabaseSQLManager
 {
     private static CarDatabaseSQLManager singletonInstance;
     private static Connection con;
-    private CarDatabaseSQLManager() throws ClassNotFoundException, SQLException
+    CarDatabaseSQLManager() throws ClassNotFoundException, SQLException
     {
     
         String DB_URL = "jdbc:mysql://cecs-db01.coe.csulb.edu/cecs323sec5g5";
@@ -390,7 +390,158 @@ public class CarDatabaseSQLManager
             return null;
         }
     }
+    public ResultSet query1()
+    {
+        String sqlQuery = "SELECT firstName, middleName, lastName, address, zip, home, cellphone\n" +
+"FROM joined_phones NATURAL JOIN persons NATURAL JOIN customers c NATURAL JOIN sales\n" +
+"WHERE customerID NOT IN\n" +
+"  (SELECT customerID FROM sales WHERE date_of_sale BETWEEN NOW() - INTERVAL 1 MONTH AND NOW())\n" +
+"GROUP BY customerID;";
+        return executeSQLQuery(sqlQuery);
+    }
     
+    public ResultSet query2(String color)
+    {        
+        String sqlQuery = "SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale\n" +
+"FROM joined_phones NATURAL JOIN persons NATURAL JOIN customers NATURAL JOIN sales NATURAL JOIN cars NATURAL JOIN car_styles cs\n" +
+"WHERE cars.color = ‘" + color + "’ AND customerID NOT IN\n" +
+"    (SELECT customerID FROM sales WHERE date_of_sale BETWEEN NOW() - INTERVAL 3 YEAR AND NOW())\n" +
+"GROUP BY customerID\n" +
+"ORDER BY date_of_sale DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
     
+    public ResultSet query3(String color)
+    {
+        String sqlQuery = "SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale\n" +
+"FROM joined_phones NATURAL JOIN persons NATURAL JOIN customers NATURAL JOIN sales NATURAL JOIN cars NATURAL JOIN car_styles\n" +
+"WHERE cars.color = '" + color + "’ AND customerID IN\n" +
+"    (SELECT customerID FROM sales WHERE date_of_sale BETWEEN NOW() - INTERVAL 3 YEAR AND NOW())\n" +
+"GROUP BY customerID\n" +
+"ORDER BY date_of_sale DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query4()
+    {
+        String sqlQuery = "SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale\n" +
+"FROM joined_phones NATURAL JOIN persons NATURAL JOIN customers NATURAL JOIN sales NATURAL JOIN car_styles\n" +
+"ORDER BY date_of_sale DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query5()
+    {
+        String sqlQuery = "SELECT firstName, middleName, lastName, department, unused_vacation_days\n" +
+"FROM persons NATURAL JOIN employees\n" +
+"WHERE unused_vacation_days > 0;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query6()
+    {
+        String sqlQuery = "SELECT employee_id, firstName, middleName, lastName, mo_salary, COUNT(technician_credentials) as numberOfCertificates\n" +
+"FROM persons NATURAL JOIN employees NATURAL JOIN techncians\n" +
+"GROUP BY employee_id\n" +
+"ORDER BY mo_salary DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query7()
+    {
+        String sqlQuery = "SELECT firstName, middleName, lastName, COUNT(*) as salesCount \n" +
+"FROM persons NATURAL JOIN employees NATURAL JOIN salespersons\n" +
+"WHERE employeeID IN \n" +
+"    (SELECT employeeID FROM sales NATURAL JOIN employees WHERE date_of_sale BETWEEN NOW() - INTERVAL 1 MONTH AND NOW())\n" +
+"GROUP BY employeeID\n" +
+"ORDER BY salesCount DESC\n" +
+"LIMIT 3;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query8()
+    {
+        String sqlQuery = "SELECT firstName, middleName, lastName, SUM(price) as grossSales\n" +
+"  FROM persons pe\n" +
+"    INNER JOIN employees e ON pe.personID = e.personID\n" +
+"    INNER JOIN salespersons s ON e.employeeID = s.employeeID\n" +
+"    INNER JOIN sales s2 ON s.employeeID = s2.salespersonID\n" +
+"WHERE date_of_sale >= DATE_SUB(NOW(), INTERVAL 1 MONTH)\n" +
+"GROUP BY e.employeeID\n" +
+"ORDER BY grossSales DESC\n" +
+"LIMIT 3;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query9()
+    {
+        String sqlQuery = "SELECT firstName, middleName, lastName, COUNT(DISTINCT customerID) as repeatedSales\n" +
+"    FROM persons pe\n" +
+"        INNER JOIN employees e ON pe.personID = e.personID\n" +
+"        INNER JOIN salespersons s ON e.employeeID = s.employeeID\n" +
+"        INNER JOIN sales s2 ON s.employeeID = s2.salespersonID\n" +
+"WHERE date_of_sale >= DATE_SUB(NOW(), INTERVAL 1 MONTH)\n" +
+"GROUP BY e.employeeID\n" +
+"ORDER BY repeatedSales ASC\n" +
+"LIMIT 3;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query10()
+    {
+        String sqlQuery = "SELECT make, model, model_year, COUNT(styleID) as numberOfCars\n" +
+"FROM sales NATURAL JOIN cars NATURAL JOIN car_styles\n" +
+"WHERE date_of_sale >= DATE_SUB(NOW(), INTERVAL 3 YEAR)\n" +
+"GROUP BY make, model\n" +
+"ORDER BY model_year ASC\n" +
+"LIMIT 5;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query11()
+    {
+        String sqlQuery = "SELECT make, model, model_year, COUNT(*) as numberOfSales\n" +
+"FROM sales NATURAL JOIN cars NATURAL JOIN car_styles cs\n" +
+"WHERE cs.fuel_type = \"electric\" AND sales.date_of_sale >= DATE_SUB(NOW(), INTERVAL 1 YEAR)\n" +
+"GROUP BY make, model\n" +
+"ORDER BY numberOfSales DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query12()
+    {
+        String sqlQuery = "SELECT make, model, model_year, COUNT(*) as numberOfCars\n" +
+"FROM sales s NATURAL JOIN cars NATURAL JOIN car_styles cs\n" +
+"WHERE cs.fuel_type != \"gasoline\" AND cs.fuel_type != \"hybrid\"\n" +
+"GROUP BY cs.fuel_type\n" +
+"ORDER BY make DESC, model DESC, model_year DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query13()
+    {
+        String sqlQuery = "SELECT date_of_sale\n" +
+"FROM sales NATURAL JOIN cars NATURAL JOIN car_styles \n" +
+"WHERE body_style = \"convertible\";";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query14(String make, String model)
+    {
+        String sqlQuery = "SELECT make, model, model_year, MAX(invoice_price) as highestPrice, MIN(invoice_price) as lowestPrice, COUNT(*) as numberOfCars\n" +
+"FROM cars NATURAL JOIN car_styles cs\n" +
+"WHERE cs.make = \"" + make + "\" AND cs.model = \"" + model + "\"\n" +
+"ORDER BY make DESC, model DESC, model_year DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
+    
+    public ResultSet query15(String make, String model, String color)
+    {
+        String sqlQuery = "SELECT make, model, model_year, MAX(invoice_price) as highestPrice, MIN(invoice_price) as lowestPrice, COUNT(*) as numberOfCars\n" +
+"FROM cars NATURAL JOIN car_styles cs\n" +
+"WHERE cs.make = \"" + make + "\" AND cs.model = \"" + model + "\" AND cars.color = \"" + color + "\"\n" +
+"ORDER BY make DESC, model DESC, model_year DESC;";
+        return executeSQLQuery(sqlQuery);
+    }
 }
 
