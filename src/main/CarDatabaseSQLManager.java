@@ -637,9 +637,34 @@ public class CarDatabaseSQLManager
     */
     public ResultSet query4()
     {
-        String sqlQuery =   "SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale\n" +
-                            "FROM joined_phones NATURAL JOIN persons NATURAL JOIN customers NATURAL JOIN sales NATURAL JOIN car_styles\n" +
-                            "ORDER BY date_of_sale DESC;";
+        String sqlQuery =   "SELECT\n" +
+                "  firstName,\n" +
+                "  middleName,\n" +
+                "  lastName,\n" +
+                "  home,\n" +
+                "  cellphone,\n" +
+                "  make,\n" +
+                "  model,\n" +
+                "  model_year,\n" +
+                "  MAX(date_of_sale) last_purchase_date\n" +
+                "FROM joined_phones\n" +
+                "  NATURAL JOIN persons\n" +
+                "  NATURAL JOIN customers\n" +
+                "  NATURAL JOIN sales\n" +
+                "  NATURAL JOIN car_styles\n" +
+                "  NATURAL JOIN (\n" +
+                "    SELECT\n" +
+                "      customerID,\n" +
+                "      (purchases / TIMESTAMPDIFF(YEAR, first_buy, now())) AVG\n" +
+                "    FROM\n" +
+                "      (SELECT\n" +
+                "         customerID,\n" +
+                "         Count(*)          purchases,\n" +
+                "         MIN(date_of_sale) first_buy\n" +
+                "       FROM sales GROUP BY customerID) avg) purchase_avg\n" +
+                "  WHERE AVG >= 2\n" +
+                "  GROUP BY (customerID)\n" +
+                "ORDER BY last_purchase_date DESC ";
         return executeSQLQuery(sqlQuery);
     }
 
