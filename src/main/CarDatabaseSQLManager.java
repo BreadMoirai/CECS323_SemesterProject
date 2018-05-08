@@ -662,10 +662,13 @@ public class CarDatabaseSQLManager
     */
     public ResultSet query6()
     {
-        String sqlQuery =   "SELECT employee_id, firstName, middleName, lastName, mo_salary, COUNT(technician_credentials) as numberOfCertificates\n" +
-                            "FROM persons NATURAL JOIN employees NATURAL JOIN techncians\n" +
-                            "GROUP BY employee_id\n" +
-                            "ORDER BY mo_salary DESC;";
+        String sqlQuery =   "SELECT employee_id, firstName, middleName, lastName, mo_salary, \n" +
+                "COUNT(technician_credentials) as numberOfCertificates\n" +
+                "FROM persons\n" +
+                "INNER JOIN employees e ON persons.personID = e.personID\n" +
+                "INNER JOIN techncians t ON e.employeeID = t.employee_id\n" +
+                "GROUP BY employee_id\n" +
+                "ORDER BY mo_salary DESC;;";
         return executeSQLQuery(sqlQuery);
     }
 
