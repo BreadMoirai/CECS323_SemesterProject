@@ -325,7 +325,7 @@ public class CarDatabaseSQLManager
         
     }
     
-    public void createSaleWithLoan(int salespersonID, String firstName, String lastName, String middleName,
+    public void createNewSaleWithLoan(int salespersonID, String firstName, String lastName, String middleName,
                                    String address, String zip, String emailAddress, Date dateOfSale, BigDecimal price,
                                    BigDecimal tradeInValue, String VIN, String socialSecurityNumber, Date dateOfLoan,
                                    BigDecimal principal, int loanLength, Date dateOfLastPayment,
