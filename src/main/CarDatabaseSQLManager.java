@@ -588,12 +588,20 @@ public class CarDatabaseSQLManager
     */
     public ResultSet query2(String color)
     {        
-        String sqlQuery =   "SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale\n" +
-                            "FROM joined_phones NATURAL JOIN persons NATURAL JOIN customers NATURAL JOIN sales NATURAL JOIN cars NATURAL JOIN car_styles cs\n" +
-                            "WHERE cars.color = ‘" + color + "’ AND customerID NOT IN\n" +
-                            "    (SELECT customerID FROM sales WHERE date_of_sale BETWEEN NOW() - INTERVAL 3 YEAR AND NOW())\n" +
-                            "GROUP BY customerID\n" +
-                            "ORDER BY date_of_sale DESC;";
+        String sqlQuery =   String.format("SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale  FROM customers\n" +
+                "  INNER JOIN sales s ON customers.customerID = s.customerID\n" +
+                "  INNER JOIN cars c ON s.VIN = c.VIN\n" +
+                "  INNER JOIN persons p ON customers.personID = p.personID\n" +
+                "  INNER JOIN joined_phones jp ON jp.personID = s.customerID\n" +
+                "  INNER JOIN car_styles cs ON c.styleID = cs.styleID\n" +
+                "WHERE date_of_sale >= DATE_SUB(NOW(), INTERVAL 5 YEAR)\n" +
+                "AND  date_of_sale <= DATE_SUB(NOW(), INTERVAL 3 YEAR)\n" +
+                "AND s.VIN NOT IN   (SELECT c2.VIN FROM customers cu2\n" +
+                "  INNER JOIN sales s2 ON cu2.customerID = s2.customerID\n" +
+                "  INNER JOIN cars c2 ON s2.VIN = c2.VIN\n" +
+                "WHERE date_of_sale >= DATE_SUB(NOW(), INTERVAL 5 YEAR)\n" +
+                "      AND  date_of_sale <= DATE_SUB(NOW(), INTERVAL 3 YEAR)\n" +
+                "      AND color = '%s')\n", color);
         return executeSQLQuery(sqlQuery);
     }
     
@@ -606,12 +614,18 @@ public class CarDatabaseSQLManager
     */
     public ResultSet query3(String color)
     {
-        String sqlQuery =   "SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale\n" +
-                            "FROM joined_phones NATURAL JOIN persons NATURAL JOIN customers NATURAL JOIN sales NATURAL JOIN cars NATURAL JOIN car_styles\n" +
-                            "WHERE cars.color = '" + color + "’ AND customerID IN\n" +
-                            "    (SELECT customerID FROM sales WHERE date_of_sale BETWEEN NOW() - INTERVAL 3 YEAR AND NOW())\n" +
-                            "GROUP BY customerID\n" +
-                            "ORDER BY date_of_sale DESC;";
+        String sqlQuery =   String.format(
+                "SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale  " +
+                        "FROM customers\n" +
+                "  INNER JOIN sales s ON customers.customerID = s.customerID\n" +
+                "  INNER JOIN cars c ON s.VIN = c.VIN\n" +
+                "  INNER JOIN persons p ON customers.personID = p.personID\n" +
+                "  INNER JOIN joined_phones jp ON jp.personID = s.customerID\n" +
+                "  INNER JOIN car_styles cs ON c.styleID = cs.styleID\n" +
+                "WHERE date_of_sale >= DATE_SUB(NOW(), INTERVAL 5 YEAR)\n" +
+                "      AND  date_of_sale <= DATE_SUB(NOW(), INTERVAL 3 YEAR)\n" +
+                "      AND color = '%s'\n" +
+                "ORDER BY date_of_sale DESC", color);
         return executeSQLQuery(sqlQuery);
     }
     
