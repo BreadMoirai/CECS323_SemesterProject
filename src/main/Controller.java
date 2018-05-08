@@ -17,6 +17,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
+import main.purchasing.Purchase;
+import main.purchasing.PurchaseDialog;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -33,6 +35,10 @@ public class Controller {
         tableTitle.setFont(new Font(20));
     }
 
+    /**
+     * This activates on button press.
+     * @param actionEvent
+     */
     public void onAction(ActionEvent actionEvent) {
         final Object userData = ((Button) actionEvent.getSource()).getUserData();
         switch ((String) userData) {
@@ -191,6 +197,9 @@ public class Controller {
                                                  result.getModel(), result.getColor()));
 
                 break;
+            }
+            case "purchase": {
+                final Optional<Purchase> purchase = new PurchaseDialog().showAndWait();
             }
         }
     }
