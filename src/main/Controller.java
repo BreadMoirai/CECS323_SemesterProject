@@ -248,7 +248,10 @@ public class Controller {
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 final int j = i;
                 TableColumn<ObservableList, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
-                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j).toString()));
+                col.setCellValueFactory(param -> {
+                    final Object o = param.getValue().get(j);
+                    return new SimpleStringProperty(o == null ? "null" : o.toString());
+                });
                 table.getColumns().add(col);
             }
             final ObservableList<ObservableList> data = FXCollections.observableArrayList();
