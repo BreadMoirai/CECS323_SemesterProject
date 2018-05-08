@@ -3,11 +3,14 @@ package main;
 import java.math.BigDecimal;
 import java.sql.*;
 
+/**
+ * The controller for the query, update, and insert of the car dealership mysql database cecs323sec5g5
+ */
 public class CarDatabaseSQLManager
 {
     private static CarDatabaseSQLManager singletonInstance;
     private static Connection con;
-    CarDatabaseSQLManager() throws ClassNotFoundException, SQLException
+    private CarDatabaseSQLManager() throws ClassNotFoundException, SQLException
     {
     
         String DB_URL = "jdbc:mysql://cecs-db01.coe.csulb.edu/cecs323sec5g5";
@@ -18,6 +21,12 @@ public class CarDatabaseSQLManager
         con.setAutoCommit(false);
     }
     
+    /**
+     * Gets the instance of CarDatabaseManager or initializes it if called for the first time
+     * @return An Instance of the CarDatabaseSQLManager
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static CarDatabaseSQLManager getInstance() throws SQLException, ClassNotFoundException
     {
         if (singletonInstance == null)
@@ -28,6 +37,15 @@ public class CarDatabaseSQLManager
         return singletonInstance;
     }
     
+    /**
+     * Method to add a row to the persons table.
+     * @param lastName First name of person to be inputted
+     * @param firstName Last name of person to be inputted
+     * @param middleName Middle name of person to be inputted
+     * @param address Street address of person
+     * @param zip Zip code of person
+     * @return The person's newly generated personID, their index in the database. Returns -1 if it fails.
+     */
     private int addPerson(String lastName, String firstName, String middleName,
                           String address, String zip)
     {
@@ -51,6 +69,12 @@ public class CarDatabaseSQLManager
             }
     }
     
+    /**
+     * Method to add a row to phone_number table
+     * @param personID Person's index in person table
+     * @param phoneType The type of phone. Can be 'Home', 'Cellphone', or 'Work'
+     * @param phoneNumber The phone number to be entered
+     */
     public void addPhoneNumber(int personID, String phoneType, String phoneNumber)
     {
         String updateStatement = "INSERT INTO phone_numbers (personID, phone_type, phone_number)  " +
@@ -70,6 +94,15 @@ public class CarDatabaseSQLManager
         
     }
     
+    /**
+     * The method to add a sale
+     * @param salespersonID The salesperson's ID from database
+     * @param customerID The customer's ID from database
+     * @param dateOfSale The Date this sale was finalized
+     * @param price The price the car was sold at
+     * @param tradeInValue The price of the car traded in during the sale
+     * @param VIN The id of the car
+     */
     public void addSale(int salespersonID, int customerID, Date dateOfSale,
                         BigDecimal price, BigDecimal tradeInValue, String VIN)
     {
@@ -93,6 +126,15 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * The method to add a car style to car_styles
+     * @param make The manufacturer of the car
+     * @param model The name of the product line for this car
+     * @param modelYear The year this car was made for
+     * @param bodyStyle The type of layout i.e. sedan, hatchback, convertible, etc...
+     * @param engineSize The volume of engine in liters
+     * @param fuelType The energy source i.e. gasoline, electric, hybrid, hydrogen
+     */
     public void addCarStyle(String make, String model, int modelYear,
                             String bodyStyle, int engineSize, String fuelType)
     {
@@ -115,6 +157,11 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Adds a row to the car_updgrades table
+     * @param VIN The id of car
+     * @param upgradeName Type of upgrade. 'leather seats', 'sunroof' etc.
+     */
     public void addCarUpgrade(String VIN, String upgradeName)
     {
         String updateStatement = "INSERT INTO car_upgrades VALUES (?, ?)";
@@ -132,8 +179,18 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Adds a row to the cars table
+     * @param VIN id of car
+     * @param styleID id of car_style from table car_styles
+     * @param invoicePrice Price of car wholesale
+     * @param retailPrice Price of car at retail
+     * @param color The color of the car
+     * @param driving_range The maximum distance he car can travel without refueling
+     * @param warranty The warranty of the car
+     */
     public void addCar(String VIN, int styleID, BigDecimal invoicePrice, BigDecimal retailPrice,
-                        String color, int driving_range, String warrenty)
+                        String color, int driving_range, String warranty)
     {
         String updateStatement = "INSERT INTO cars VALUES (?, ?, ?, ?, ?, ?, ?)";
         
@@ -145,7 +202,7 @@ public class CarDatabaseSQLManager
             preparedStatement.setBigDecimal(4, retailPrice);
             preparedStatement.setString(5, color);
             preparedStatement.setInt(6, driving_range);
-            preparedStatement.setString(7, warrenty);
+            preparedStatement.setString(7, warranty);
     
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -156,10 +213,17 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Adds a row to the customers table
+     * @param personID The id generated from inserting a person to persons
+     * @param emailAddr The email of customer
+     * @return The automaticallly generated ID of customers. Returns -1 if it fails
+     */
     public int addCustomer(int personID, String emailAddr)
     {
         String updateStatement = "Insert INTO customers (personID, email_addr) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement, Statement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement,
+                Statement.RETURN_GENERATED_KEYS))
         {
             preparedStatement.setInt(1, personID);
             preparedStatement.setString(2, emailAddr);
@@ -173,6 +237,14 @@ public class CarDatabaseSQLManager
             return -1;
         }
     }
+    
+    
+    /**
+     * Adds a row to dependents table
+     * @param employeeID The ID of employee from employees who has dependent.
+     * @param personID The ID of person from persons of dependent.
+     * @param socialSecurityNumber The social security number of dependent.
+     */
     public void addDependent(int employeeID, int personID, String socialSecurityNumber)
     {
         String updateStatement = "Insert INTO dependents(employeeID, personID, social_security_number)" +
@@ -191,6 +263,19 @@ public class CarDatabaseSQLManager
             System.out.println(e);
         }
     }
+    
+    
+    /**
+     * Adds a row to employees table
+     * @param personID The person id from persons
+     * @param hireDate The Date when employee was hired
+     * @param moSalary The monthly salary of employee
+     * @param unusedVacationDays The number of unused vacation days of employee
+     * @param socialSecurityNumber The social security number of employee
+     * @param department The department the employee works in
+     * @param emergencyContact The person who is the employee's contact in case of emergency
+     * @return The automatically generated id made when employee is inputted
+     */
     public int addEmployee(int personID, Date hireDate, BigDecimal moSalary, int unusedVacationDays,
                             String socialSecurityNumber, String department, int emergencyContact)
     {
@@ -217,6 +302,17 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Adds a row to the loans table
+     * @param VIN The id of car
+     * @param customerID The id of customer from customers
+     * @param dateOfLoan The Date the loan is finalized
+     * @param principal The starting amount of loan
+     * @param loanLength The length of loan in years
+     * @param dateOfLastPayment The Date of calculated last payment
+     * @param monthlyPayment The amount the customer is to pay monthly
+     * @param socialSecurityNumber The customer's social security number
+     */
     public void addLoan(String VIN, int customerID, Date dateOfLoan, BigDecimal principal,
                         int loanLength, Date dateOfLastPayment, BigDecimal monthlyPayment,
                         String socialSecurityNumber)
@@ -240,6 +336,11 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Adds a row to managers table.
+     * @param employeeID The employeeID of manager.
+     * @param pastAssignements The manager's previous assignment.
+     */
     public void addManager(int employeeID, String pastAssignements)
     {
         String updateStatement = "INSERT INTO managers VALUES (?, ?)";
@@ -255,7 +356,13 @@ public class CarDatabaseSQLManager
         }
     }
     
-    public int addSalesperson(int employeeInt, double comissionRate)
+    /**
+     * Adds a row to the salespersons class.
+     * @param employeeInt The employeeID of salespersons from employees.
+     * @param commissionRate The commission rate of the salesperson makes each sale.
+     * @return The automatically generated id of salesperson. Returns -1 if this fails.
+     */
+    public int addSalesperson(int employeeInt, double commissionRate)
     {
         String updateStatement = "INSERT INTO salespersons VALUES (?, ?)";
         
@@ -263,10 +370,9 @@ public class CarDatabaseSQLManager
                 Statement.RETURN_GENERATED_KEYS))
         {
             preparedStatement.setInt(1, employeeInt);
-            preparedStatement.setDouble(2, comissionRate);
-            
-            int salespersonID = preparedStatement.executeUpdate();
-            return salespersonID;
+            preparedStatement.setDouble(2, commissionRate);
+    
+            return preparedStatement.executeUpdate();
             
         } catch (SQLException e)
         {
@@ -275,6 +381,11 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Adds a row to technicians
+     * @param employeeInt The employee id of technician from employees
+     * @param technicianCredential The credential of technician.
+     */
     public void addTechnician(int employeeInt, String technicianCredential)
     {
         String updateStatement = "INSERT INTO techncians VALUES (?, ?)";
@@ -293,6 +404,13 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Adds a row to used_cars
+     * @param VIN The id of car.
+     * @param license_plate The license_plate of car. May be null.
+     * @param mileage The current mileage from odometer.
+     * @param carCondition The current condition of car.
+     */
     public void addUsedCar(String VIN, String license_plate, int mileage, String carCondition )
     {
         String updateStatement = "INSERT INTO used_cars VALUES(?, ?, ?, ?)";
@@ -311,6 +429,21 @@ public class CarDatabaseSQLManager
         }
     }
     
+    /**
+     * Creates a new sale based on customer's details. 
+     * @param salespersonID
+     * @param firstName
+     * @param lastName
+     * @param middleName
+     * @param address
+     * @param zip
+     * @param emailAddress
+     * @param dateOfSale
+     * @param price
+     * @param tradeInValue
+     * @param VIN
+     * @return
+     */
     public int createNewSale(int salespersonID, String firstName, String lastName, String middleName, String address,
                               String zip, String emailAddress,
                               Date dateOfSale, BigDecimal price, BigDecimal tradeInValue, String VIN)
