@@ -12,7 +12,7 @@ public class CarDatabaseSQLManager
     private static Connection con;
     private CarDatabaseSQLManager() throws ClassNotFoundException, SQLException
     {
-    
+
         String DB_URL = "jdbc:mysql://cecs-db01.coe.csulb.edu/cecs323sec5g5";
         String USER = "cecs323sec5n11";
         String PASS = "ai4tah";
@@ -20,7 +20,7 @@ public class CarDatabaseSQLManager
         con = DriverManager.getConnection(DB_URL, USER, PASS);
         con.setAutoCommit(false);
     }
-    
+
     /**
      * Gets the instance of CarDatabaseManager or initializes it if called for the first time
      * @return An Instance of the CarDatabaseSQLManager
@@ -33,10 +33,10 @@ public class CarDatabaseSQLManager
         {
             singletonInstance = new CarDatabaseSQLManager();
         }
-        
+
         return singletonInstance;
     }
-    
+
     /**
      * Method to add a row to the persons table.
      * @param lastName First name of person to be inputted
@@ -58,7 +58,7 @@ public class CarDatabaseSQLManager
                 preparedStatement.setString(3, middleName);
                 preparedStatement.setString(4, address);
                 preparedStatement.setString(5, zip);
-                
+
                 int personID = preparedStatement.executeUpdate();
                 preparedStatement.close();
                 return personID;
@@ -68,7 +68,7 @@ public class CarDatabaseSQLManager
                 return -1;
             }
     }
-    
+
     /**
      * Method to add a row to phone_number table
      * @param personID Person's index in person table
@@ -84,16 +84,16 @@ public class CarDatabaseSQLManager
             preparedStatement.setInt(1, personID);
             preparedStatement.setString(2, phoneType);
             preparedStatement.setString(3, phoneNumber);
-    
+
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e)
         {
             System.out.println(e);
         }
-        
+
     }
-    
+
     /**
      * The method to add a sale
      * @param salespersonID The salesperson's ID from database
@@ -117,7 +117,7 @@ public class CarDatabaseSQLManager
             preparedStatement.setBigDecimal(4, price);
             preparedStatement.setBigDecimal(5, tradeInValue);
             preparedStatement.setString(6, VIN);
-    
+
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e)
@@ -125,7 +125,7 @@ public class CarDatabaseSQLManager
             System.out.println(e);
         }
     }
-    
+
     /**
      * The method to add a car style to car_styles
      * @param make The manufacturer of the car
@@ -148,7 +148,7 @@ public class CarDatabaseSQLManager
             preparedStatement.setString(4, bodyStyle);
             preparedStatement.setInt(5, engineSize);
             preparedStatement.setString(6, fuelType);
-    
+
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e)
@@ -156,7 +156,7 @@ public class CarDatabaseSQLManager
             System.out.println(e);
         }
     }
-    
+
     /**
      * Adds a row to the car_updgrades table
      * @param VIN The id of car
@@ -165,12 +165,12 @@ public class CarDatabaseSQLManager
     public void addCarUpgrade(String VIN, String upgradeName)
     {
         String updateStatement = "INSERT INTO car_upgrades VALUES (?, ?)";
-        
+
         try(PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
         {
             preparedStatement.setString(1, VIN);
             preparedStatement.setString(2, upgradeName);
-    
+
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e)
@@ -178,7 +178,7 @@ public class CarDatabaseSQLManager
             System.out.println(e);
         }
     }
-    
+
     /**
      * Adds a row to the cars table
      * @param VIN id of car
@@ -193,7 +193,7 @@ public class CarDatabaseSQLManager
                         String color, int driving_range, String warranty)
     {
         String updateStatement = "INSERT INTO cars VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+
         try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
         {
             preparedStatement.setString(1, VIN);
@@ -203,7 +203,7 @@ public class CarDatabaseSQLManager
             preparedStatement.setString(5, color);
             preparedStatement.setInt(6, driving_range);
             preparedStatement.setString(7, warranty);
-    
+
             preparedStatement.executeUpdate();
             preparedStatement.close();
         }
@@ -212,7 +212,7 @@ public class CarDatabaseSQLManager
             System.out.println(e);
         }
     }
-    
+
     /**
      * Adds a row to the customers table
      * @param personID The id generated from inserting a person to persons
@@ -227,7 +227,7 @@ public class CarDatabaseSQLManager
         {
             preparedStatement.setInt(1, personID);
             preparedStatement.setString(2, emailAddr);
-    
+
             int customerID = preparedStatement.executeUpdate();
             preparedStatement.close();
             return customerID;
@@ -237,8 +237,8 @@ public class CarDatabaseSQLManager
             return -1;
         }
     }
-    
-    
+
+
     /**
      * Adds a row to dependents table
      * @param employeeID The ID of employee from employees who has dependent.
@@ -254,17 +254,17 @@ public class CarDatabaseSQLManager
             preparedStatement.setInt(1, employeeID);
             preparedStatement.setInt(2, personID);
             preparedStatement.setString(3, socialSecurityNumber);
-    
+
             preparedStatement.executeUpdate();
             preparedStatement.close();
-        
+
         } catch (SQLException e)
         {
             System.out.println(e);
         }
     }
-    
-    
+
+
     /**
      * Adds a row to employees table
      * @param personID The person id from persons
@@ -290,10 +290,10 @@ public class CarDatabaseSQLManager
             preparedStatement.setString(5, socialSecurityNumber);
             preparedStatement.setString(6, department);
             preparedStatement.setInt(7, emergencyContact);
-            
+
             int employeeID = preparedStatement.executeUpdate();
             preparedStatement.close();
-            
+
             return employeeID;
         } catch (SQLException e)
         {
@@ -301,7 +301,7 @@ public class CarDatabaseSQLManager
             return -1;
         }
     }
-    
+
     /**
      * Adds a row to the loans table
      * @param VIN The id of car
@@ -318,7 +318,7 @@ public class CarDatabaseSQLManager
                         String socialSecurityNumber)
     {
         String updateStatement = "INSERT INTO loans VALUES (?, ?, ? ,? ,? ,? ,?, ?)";
-        
+
         try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
         {
             preparedStatement.setString(1, VIN);
@@ -335,7 +335,7 @@ public class CarDatabaseSQLManager
             System.out.println(e);
         }
     }
-    
+
     /**
      * Adds a row to managers table.
      * @param employeeID The employeeID of manager.
@@ -344,7 +344,7 @@ public class CarDatabaseSQLManager
     public void addManager(int employeeID, String pastAssignements)
     {
         String updateStatement = "INSERT INTO managers VALUES (?, ?)";
-        
+
         try(PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
         {
             preparedStatement.setInt(1, employeeID);
@@ -355,7 +355,7 @@ public class CarDatabaseSQLManager
             System.out.println(e);
         }
     }
-    
+
     /**
      * Adds a row to the salespersons class.
      * @param employeeInt The employeeID of salespersons from employees.
@@ -365,22 +365,22 @@ public class CarDatabaseSQLManager
     public int addSalesperson(int employeeInt, double commissionRate)
     {
         String updateStatement = "INSERT INTO salespersons VALUES (?, ?)";
-        
+
         try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement,
                 Statement.RETURN_GENERATED_KEYS))
         {
             preparedStatement.setInt(1, employeeInt);
             preparedStatement.setDouble(2, commissionRate);
-    
+
             return preparedStatement.executeUpdate();
-            
+
         } catch (SQLException e)
         {
             System.out.println(e);
             return -1;
         }
     }
-    
+
     /**
      * Adds a row to technicians
      * @param employeeInt The employee id of technician from employees
@@ -389,21 +389,21 @@ public class CarDatabaseSQLManager
     public void addTechnician(int employeeInt, String technicianCredential)
     {
         String updateStatement = "INSERT INTO techncians VALUES (?, ?)";
-        
+
         try (PreparedStatement preparedStatement = con.prepareStatement(updateStatement,
                 Statement.RETURN_GENERATED_KEYS))
         {
             preparedStatement.setInt(1, employeeInt);
             preparedStatement.setString(2, technicianCredential);
-            
+
             preparedStatement.executeUpdate();
-            
+
         } catch (SQLException e)
         {
             System.out.println(e);
         }
     }
-    
+
     /**
      * Adds a row to used_cars
      * @param VIN The id of car.
@@ -414,21 +414,21 @@ public class CarDatabaseSQLManager
     public void addUsedCar(String VIN, String license_plate, int mileage, String carCondition )
     {
         String updateStatement = "INSERT INTO used_cars VALUES(?, ?, ?, ?)";
-        
+
         try(PreparedStatement preparedStatement = con.prepareStatement(updateStatement))
         {
             preparedStatement.setString(1, VIN);
             preparedStatement.setString(2, license_plate);
             preparedStatement.setInt(3, mileage);
             preparedStatement.setString(4, carCondition);
-            
+
             preparedStatement.executeUpdate();
         } catch (SQLException e)
         {
             System.out.println(e);
         }
     }
-    
+
     /**
      * Creates a new sale based on customer's details. Checks if customer is in database and adds a new customer
      * if they are not.
@@ -458,7 +458,7 @@ public class CarDatabaseSQLManager
         addSale(salespersonID, customerID, dateOfSale, price, tradeInValue, VIN);
         return customerID;
     }
-    
+
     /**
      * Creates a new sale by calling createNewSale() then creates a loan.
      * @param salespersonID ID of salesperson from salespersons.
@@ -490,7 +490,7 @@ public class CarDatabaseSQLManager
         addLoan(VIN, customerID, dateOfLoan, principal, loanLength, dateOfLastPayment, monthlyPayment,
                 socialSecurityNumber);
     }
-    
+
     /**
      * Returns the customer id obtained from a query or -1 if not found.
      * @param firstName Customer's first name
@@ -517,7 +517,7 @@ public class CarDatabaseSQLManager
             return -1;
         }
     }
-    
+
     /**
      * Changes all values in column unused_vacation_days in employees to 0.
      */
@@ -532,7 +532,7 @@ public class CarDatabaseSQLManager
             System.out.println();
         }
     }
-    
+
     /**
      * Commits the changes that have been added so that it is all one transaction.
      */
@@ -546,7 +546,7 @@ public class CarDatabaseSQLManager
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Executes the given query
      * @param sqlQuery The query to be executed
@@ -555,7 +555,7 @@ public class CarDatabaseSQLManager
     private ResultSet executeSQLQuery(String sqlQuery)
     {
         try {PreparedStatement preparedStatement = con.prepareStatement(sqlQuery);
-        
+
             return preparedStatement.executeQuery();
         } catch (SQLException e)
         {
@@ -563,7 +563,7 @@ public class CarDatabaseSQLManager
             return null;
         }
     }
-    
+
     /*
     *   Query execution for:
     *   1. All prospective customers who visited the dealership but have not made a purchase with your
@@ -578,16 +578,16 @@ public class CarDatabaseSQLManager
                             "GROUP BY customerID;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
-    *   Query execution for: 
+    *   Query execution for:
     *   2. Customers who had not purchased a vehicle of a certain color (user input) within the past 3 to 5
     *       years (full name, home phone, cell phone, make, model, year (of car), last purchase date: sorted
     *       descending by purchase date)
     *   @param color
     */
     public ResultSet query2(String color)
-    {        
+    {
         String sqlQuery =   String.format("SELECT firstName, middleName, lastName, home, cellphone, make, model, model_year, date_of_sale  FROM customers\n" +
                 "  INNER JOIN sales s ON customers.customerID = s.customerID\n" +
                 "  INNER JOIN cars c ON s.VIN = c.VIN\n" +
@@ -604,7 +604,7 @@ public class CarDatabaseSQLManager
                 "      AND color = '%s')\n", color);
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   3. Customers who had purchased a vehicle of a certain color (user input) within the past 3 to 5
@@ -628,8 +628,8 @@ public class CarDatabaseSQLManager
                 "ORDER BY date_of_sale DESC", color);
         return executeSQLQuery(sqlQuery);
     }
-    
-    /* 
+
+    /*
     *   Query execution for:
     *   4. Frequent customers who make a purchase on average every 2 years or less (full name, home
     *       phone, cell phone, make, model, year (of car), last purchase date: sorted descending by
@@ -642,7 +642,7 @@ public class CarDatabaseSQLManager
                             "ORDER BY date_of_sale DESC;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   5. Employees with unused vacation time (full name, department, unused days)
@@ -654,7 +654,7 @@ public class CarDatabaseSQLManager
                             "WHERE unused_vacation_days > 0;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   6. Pay rates of all technicians possessing certificates (full name, pay rates, number of certificates:
@@ -668,7 +668,7 @@ public class CarDatabaseSQLManager
                             "ORDER BY mo_salary DESC;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   7. Top three salespeople with the highest number of sales in the past 30 days (full name, number
@@ -685,7 +685,7 @@ public class CarDatabaseSQLManager
                             "LIMIT 3;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   8. Top three salespeople with the highest gross sales ($$$) in the past 30 days (full name, gross
@@ -704,7 +704,7 @@ public class CarDatabaseSQLManager
                             "LIMIT 3;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   9. Top three salespeople with the most number of repeated sales to the same (loyal) customers
@@ -723,7 +723,7 @@ public class CarDatabaseSQLManager
                             "LIMIT 3;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   10. Top five most popular car models in the past 3 years (make, model, year, number of cars: sorted
@@ -739,7 +739,7 @@ public class CarDatabaseSQLManager
                             "LIMIT 5;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   11. All electric cars sold within the last year (make, model, year, number of cars: sorted descending
@@ -754,7 +754,7 @@ public class CarDatabaseSQLManager
                             "ORDER BY numberOfSales DESC;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   12. All non-fossil fuel cars sold within the last year (make, model, year, number of cars in each
@@ -769,19 +769,21 @@ public class CarDatabaseSQLManager
                             "ORDER BY make DESC, model DESC, model_year DESC;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
-    *   13. The month with the highest number of convertible cars sold (month, number of cars) 
+    *   13. The month with the highest number of convertible cars sold (month, number of cars)
     */
     public ResultSet query13()
     {
-        String sqlQuery =   "SELECT date_of_sale\n" +
+        String sqlQuery =   "SELECT CONCAT(MONTHNAME(date_of_sale), ' ', " +
+                                "YEAR(date_of_sale)) month, COUNT(*)\n" +
                             "FROM sales NATURAL JOIN cars NATURAL JOIN car_styles \n" +
-                            "WHERE body_style = \"convertible\";";
+                            "WHERE body_style = \"convertible\" " +
+                            "GROUP BY month";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   14. List of cars of a certain (user input) make and model (model, make, year, highest price, lowest
@@ -797,7 +799,7 @@ public class CarDatabaseSQLManager
                             "ORDER BY make DESC, model DESC, model_year DESC;";
         return executeSQLQuery(sqlQuery);
     }
-    
+
     /*
     *   Query execution for:
     *   15. List of cars of a certain (user input) make, model and color (model, make, year, color, price:
