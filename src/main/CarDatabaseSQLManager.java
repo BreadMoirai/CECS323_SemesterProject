@@ -806,10 +806,12 @@ public class CarDatabaseSQLManager
     public ResultSet query13()
     {
         String sqlQuery =   "SELECT CONCAT(MONTHNAME(date_of_sale), ' ', " +
-                                "YEAR(date_of_sale)) month, COUNT(*)\n" +
+                                "YEAR(date_of_sale)) month, COUNT(*) number_sold\n" +
                             "FROM sales NATURAL JOIN cars NATURAL JOIN car_styles \n" +
                             "WHERE body_style = \"convertible\" " +
-                            "GROUP BY month";
+                            "GROUP BY month " +
+                            "ORDER BY number_sold DESC LIMIT 1" ;
+
         return executeSQLQuery(sqlQuery);
     }
 

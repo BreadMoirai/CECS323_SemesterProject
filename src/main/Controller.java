@@ -100,7 +100,6 @@ public class Controller {
             }
             case "4":
                 tableTitle.setText("Frequent customers who make a purchase on average every 2 years or less");
-                // TODO
                 setTableResults(database.query4());
                 break;
             case "5":
