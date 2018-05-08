@@ -33,7 +33,7 @@ public class PurchaseDialog extends Dialog<Purchase> {
         setResultConverter(dialogButton -> null);
         getDialogPane().setMaxHeight(Double.MAX_VALUE);
         getDialogPane().setMinHeight(400);
-        getDialogPane().setMinWidth(400);
+        getDialogPane().setMinWidth(380);
     }
 
     private void setEmployeeFields() {
@@ -187,6 +187,7 @@ public class PurchaseDialog extends Dialog<Purchase> {
         getDialogPane().getButtonTypes().add(ButtonType.FINISH);
 
         setResultConverter(buttonType -> {
+            if (ssn.getText().isEmpty()) return purchase;
             purchase.setSocialSecurityNumber(ssn.getText());
             final LocalDate date = dateOfLoan.getValue();
             purchase.setDateOfLoan(Date.valueOf(date));
