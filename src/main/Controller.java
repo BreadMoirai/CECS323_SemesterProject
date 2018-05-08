@@ -29,6 +29,15 @@ public class Controller {
 
     public Label tableTitle;
     public TableView<ObservableList> table;
+    private CarDatabaseSQLManager database;
+
+    {
+        try {
+            database = CarDatabaseSQLManager.getInstance();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @FXML
     public void initialize() {
@@ -37,6 +46,7 @@ public class Controller {
 
     /**
      * This activates on button press.
+     *
      * @param actionEvent
      */
     public void onAction(ActionEvent actionEvent) {
@@ -46,7 +56,7 @@ public class Controller {
                 tableTitle.setText(
                         "All prospective customers who visited the dealership but have not made a purchase with your " +
                                 "dealership within the past month");
-
+                setTableResults(database.query1());
                 break;
             case "2": {
                 final TextInputDialog dialog = new TextInputDialog();
@@ -61,7 +71,7 @@ public class Controller {
                 final String color = result.get();
                 tableTitle.setText(
                         "Customers who had not purchased a [" + color + "] vehicle within the past 3 to 5 year");
-
+                setTableResults(database.query2(color));
                 break;
             }
             case "3": {
@@ -77,49 +87,50 @@ public class Controller {
                 final String color = result.get();
                 tableTitle.setText(
                         "Customers who had purchased a [" + color + "] vehicle within the past 3 to 5 year");
-
+                setTableResults(database.query3(color));
                 break;
             }
             case "4":
                 tableTitle.setText("Frequent customers who make a purchase on average every 2 years or less");
-
+                // TODO
+                setTableResults(database.query4());
                 break;
             case "5":
                 tableTitle.setText("Employees with unused vacation time");
-
+                setTableResults(database.query5());
                 break;
             case "6":
                 tableTitle.setText("Pay rates of all technicians possessing certificates");
-
+                setTableResults(database.query6());
                 break;
             case "7":
                 tableTitle.setText("Top three salespeople with the highest number of sales in the past 30 days");
-
+                setTableResults(database.query7());
                 break;
             case "8":
                 tableTitle.setText("Top three salespeople with the highest gross sales in the past 30 days");
-
+                setTableResults(database.query8());
                 break;
             case "9":
                 tableTitle.setText(
                         "Top three salespeople with the most number of repeated sales to the same customers");
-
+                setTableResults(database.query9());
                 break;
             case "10":
                 tableTitle.setText("Top five most popular car models in the past 3 years");
-
+                setTableResults(database.query10());
                 break;
             case "11":
                 tableTitle.setText("All electric cars sold within the last year");
-
+                setTableResults(database.query11());
                 break;
             case "12":
                 tableTitle.setText("All non-fossil fuel cars sold within the last year");
-
+                setTableResults(database.query12());
                 break;
             case "13":
                 tableTitle.setText("The month with the highest number of convertible cars sold");
-
+                setTableResults(database.query13());
                 break;
             case "14": {
                 final Dialog<MakeModel> dialog = new Dialog<>();
@@ -155,7 +166,7 @@ public class Controller {
                 final MakeModel result = makeModel.get();
                 tableTitle.setText(
                         String.format("Cars with make [%s] and model [%s]", result.getMake(), result.getModel()));
-
+                database.query14(result.getMake(), result.getModel());
                 break;
             }
             case "15": {
@@ -194,35 +205,49 @@ public class Controller {
                 if (!makeModel.isPresent()) return;
                 final MakeModelColor result = makeModel.get();
                 tableTitle.setText(String.format("Cars with make [%s], model [%s], and color [%s]", result.getMake(),
-                                                 result.getModel(), result.getColor()));
-
+                        result.getModel(), result.getColor()));
+                database.query15(result.getMake(), result.getModel(), result.getColor());
                 break;
             }
             case "purchase": {
                 final Optional<Purchase> purchase = new PurchaseDialog().showAndWait();
+                purchase.ifPresent(p -> {
+                    if (p.hasLoan()) {
+                        database.createNewSaleWithLoan(p.getSalespersonID(), p.getFirstName(), p.getLastName(), p.getMiddleName(), p.getAddress(), p.getZip(), p.getEmailAddress(), p.getDateOfSale(), p.getPrice(), p.getTradeInValue(), p.getVIN(), p.getSocialSecurityNumber(), p.getDateOfLoan(), p.getPrincipal(), p.getLoanLength(), p.getDateOfLastPayment(), p.getMonthlyPayment());
+                    }
+                    else {
+                        database.createNewSale(p.getSalespersonID(), p.getFirstName(), p.getLastName(), p.getMiddleName(), p.getAddress(), p.getZip(), p.getEmailAddress(), p.getDateOfSale(), p.getPrice(), p.getTradeInValue(), p.getVIN());
+                    }
+                });
             }
         }
     }
 
-    private void setTableResults(ResultSet rs) throws SQLException {
+    private void setTableResults(ResultSet rs) {
         table.getItems().clear();
         table.getColumns().clear();
-        final ResultSetMetaData metaData = rs.getMetaData();
-        for (int i = 0; i < metaData.getColumnCount(); i++) {
-            final int j = i;
-            TableColumn<ObservableList, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
-            col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j).toString()));
-            table.getColumns().add(col);
-        }
-        final ObservableList<ObservableList> data = FXCollections.observableArrayList();
-        while(rs.next()){
-            ObservableList<String> row = FXCollections.observableArrayList();
-            for(int i=1 ; i<=rs.getMetaData().getColumnCount(); i++){
-                row.add(rs.getString(i));
+        try {
+            final ResultSetMetaData metaData;
+            metaData = rs.getMetaData();
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                final int j = i;
+                TableColumn<ObservableList, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j).toString()));
+                table.getColumns().add(col);
             }
-            data.add(row);
+            final ObservableList<ObservableList> data = FXCollections.observableArrayList();
+            while (rs.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    row.add(rs.getString(i));
+                }
+                data.add(row);
+            }
+            table.setItems(data);
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        table.setItems(data);
     }
 
     private static class MakeModel {

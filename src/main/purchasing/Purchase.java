@@ -24,6 +24,74 @@ public class Purchase {
     private Date dateOfLastPayment;
     private BigDecimal monthlyPayment;
 
+    public int getSalespersonID() {
+        return salespersonID;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public Date getDateOfSale() {
+        return dateOfSale;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public BigDecimal getTradeInValue() {
+        return tradeInValue;
+    }
+
+    public String getVIN() {
+        return VIN;
+    }
+
+    public String getSocialSecurityNumber() {
+        return socialSecurityNumber;
+    }
+
+    public Date getDateOfLoan() {
+        return dateOfLoan;
+    }
+
+    public BigDecimal getPrincipal() {
+        return principal;
+    }
+
+    public int getLoanLength() {
+        return loanLength;
+    }
+
+    public Date getDateOfLastPayment() {
+        return dateOfLastPayment;
+    }
+
+    public BigDecimal getMonthlyPayment() {
+        return monthlyPayment;
+    }
+
     public boolean hasLoan() {
         return dateOfLoan != null;
     }
