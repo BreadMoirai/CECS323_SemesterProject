@@ -311,7 +311,7 @@ public class CarDatabaseSQLManager
         }
     }
     
-    public void createNewSale(int salespersonID, String firstName, String lastName, String middleName, String address,
+    public int createNewSale(int salespersonID, String firstName, String lastName, String middleName, String address,
                               String zip, String emailAddress,
                               Date dateOfSale, BigDecimal price, BigDecimal tradeInValue, String VIN)
     {
@@ -322,7 +322,7 @@ public class CarDatabaseSQLManager
             customerID = addCustomer(personID, emailAddress);
         }
         addSale(salespersonID, customerID, dateOfSale, price, tradeInValue, VIN);
-        
+        return customerID;
     }
     
     public void createNewSaleWithLoan(int salespersonID, String firstName, String lastName, String middleName,
@@ -330,8 +330,8 @@ public class CarDatabaseSQLManager
                                    BigDecimal tradeInValue, String VIN, String socialSecurityNumber, Date dateOfLoan,
                                    BigDecimal principal, int loanLength, Date dateOfLastPayment,
                                    BigDecimal monthlyPayment)
-    {   int customerID = getCustomerID(firstName, lastName, middleName, zip);
-        createNewSale(salespersonID, firstName, lastName, middleName, address, zip, emailAddress, dateOfSale, price,
+    {
+        int customerID = createNewSale(salespersonID, firstName, lastName, middleName, address, zip, emailAddress, dateOfSale, price,
                 tradeInValue, VIN);
         addLoan(VIN, customerID, dateOfLoan, principal, loanLength, dateOfLastPayment, monthlyPayment,
                 socialSecurityNumber);
